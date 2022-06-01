@@ -28,7 +28,7 @@ namespace Sniffer.DotNetversion
         }
 
 
-        public ICsReport? Execute(string path)
+        public ICsReport Execute(string path)
         {
             var builder = CsReportBuilder.Create();
 

@@ -10,14 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CodeSniffer.Core" Version="0.1.0-develop0005" />
     <PackageReference Include="Microsoft.Build" Version="17.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\CodeSniffer\CodeSniffer.Core\CodeSniffer.Core.csproj">
-      <Private>false</Private>
-      <ExcludeAssets>runtime</ExcludeAssets>
-    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
