@@ -35,7 +35,7 @@ namespace Sniffer.DotNetversion
             foreach (var projectFile in GetProjectFiles(path))
             {
                 var projectName = Path.GetRelativePath(path, projectFile);
-                var asset = builder.AddAsset(projectName);
+                var asset = builder.AddAsset(projectName, projectName);
 
                 logger.Debug("Scanning project file {filename}", projectFile);
                 try
