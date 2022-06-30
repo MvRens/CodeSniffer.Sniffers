@@ -3,11 +3,13 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using CodeSniffer.Core.Plugin;
 using CodeSniffer.Core.Sniffer;
+using JetBrains.Annotations;
 using Serilog;
 
 namespace Sniffer.DotNetversion
 {
-    [CsPlugin("dotnet.version")]
+    [CsPlugin("fe7d8b97-efd3-44c2-81b6-5f86c0c5f684")]
+    [UsedImplicitly]
     public class DotNetVersionSnifferPlugin : ICsSnifferPlugin, ICsPluginHelp
     {
         public string Name => ".NET target framework version";

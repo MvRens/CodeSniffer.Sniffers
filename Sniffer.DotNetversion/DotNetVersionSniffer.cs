@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.XPath;
 using CodeSniffer.Core.Sniffer;
@@ -40,18 +40,42 @@ namespace Sniffer.DotNetversion
                 logger.Debug("Scanning project file {filename}", projectFile);
                 try
                 {
-                    if (!TryGetTargetFramework(projectFile, out var targetFramework))
+                    var result = CsReportResult.Critical;
+                    var targetFrameworks = new StringBuilder();
+                    asset.SetResult(CsReportResult.Critical, "Unable to determine target framework version");
+
+                    foreach (var targetFramework in GetTargetFrameworks(projectFile))
                     {
-                        asset.SetResult(CsReportResult.Critical, "Unable to determine target framework version");
-                        continue;
+                        if (targetFrameworks.Length > 0)
+                            targetFrameworks.Append(", ");
+
+                        targetFrameworks.Append(targetFramework);
+
+                        if (Matches(targetFramework, criticalMatchers))
+                        {
+                            // Only critical if all frameworks are critical
+                            if (result == CsReportResult.Critical)
+                                asset.SetResult(CsReportResult.Critical, "Target framework is in the critical list");
+                        }
+                        else if (Matches(targetFramework, warningMatchers))
+                        {
+                            // Only warning if all frameworks are either warning or critical
+                            // ReSharper disable once InvertIf
+                            if (result >= CsReportResult.Warning)
+                            {
+                                asset.SetResult(CsReportResult.Warning, "Target framework is in the warning list");
+                                result = CsReportResult.Warning;
+                            }
+                        }
+                        else
+                        {
+                            // If any framework is valid, consider the check a success
+                            asset.SetResult(CsReportResult.Success, "");
+                            result = CsReportResult.Success;
+                        }
                     }
 
-                    asset.SetProperty("Target framework", targetFramework);
-
-                    if (Matches(targetFramework, criticalMatchers))
-                        asset.SetResultIfHigher(CsReportResult.Critical, "Target framework is in the critical list");
-                    else if (Matches(targetFramework, warningMatchers))
-                        asset.SetResultIfHigher(CsReportResult.Warning, "Target framework is in the warning list");
+                    asset.SetProperty("Target framework", targetFrameworks.ToString());
                 }
                 catch (Exception e)
                 {
@@ -96,23 +120,33 @@ namespace Sniffer.DotNetversion
         }
 
 
-        private bool TryGetTargetFramework(string projectFile, [NotNullWhen(true)] out string? version)
+        private IEnumerable<string> GetTargetFrameworks(string projectFile)
         {
             var project = new XPathDocument(projectFile);
             var navigator = project.CreateNavigator();
+
+            var versionsNode = navigator.SelectSingleNode("/Project/PropertyGroup/TargetFrameworks");
+            if (versionsNode != null)
+            {
+                var versions = versionsNode.Value.Split(';').Where(v => !string.IsNullOrWhiteSpace(v)).ToList();
+                if (versions.Count > 0)
+                    return versions;
+            }
+                
 
             var versionNode =
                 navigator.SelectSingleNode("/Project/PropertyGroup/TargetFramework") ??
                 navigator.SelectSingleNode("/Project/PropertyGroup/TargetFrameworkVersion");
 
-            version = versionNode?.Value;
+            var version = versionNode?.Value;
             if (!string.IsNullOrWhiteSpace(version))
-                return true;
-
+                return Enumerable.Repeat(version, 1);
+            
             logger.Warning(
                 "Could not find TargetFramework or TargetFrameworkVersion element in Project file {filename}, skipping",
                 projectFile);
-            return false;
+
+            return Enumerable.Empty<string>();
         }
 
 
