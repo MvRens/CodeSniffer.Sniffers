@@ -132,4 +132,13 @@
   <data name="HelpWarnSummary" xml:space="preserve">
     <value>The names of the .NET versions, as specified in the project files, which should cause a warning.</value>
   </data>
+  <data name="ResultCritical" xml:space="preserve">
+    <value>Target framework "{0}" is in the critical list</value>
+  </data>
+  <data name="ResultNoTargetFrameworkVersion" xml:space="preserve">
+    <value>Unable to determine target framework version</value>
+  </data>
+  <data name="ResultWarning" xml:space="preserve">
+    <value>Target framework "{0}" is in the warning list</value>
+  </data>
 </root>

@@ -42,7 +42,7 @@ namespace Sniffer.DotNetversion
                 {
                     var result = CsReportResult.Critical;
                     var targetFrameworks = new StringBuilder();
-                    asset.SetResult(CsReportResult.Critical, "Unable to determine target framework version");
+                    asset.SetResult(CsReportResult.Critical, Strings.ResultNoTargetFrameworkVersion);
 
                     foreach (var targetFramework in GetTargetFrameworks(projectFile))
                     {
@@ -55,7 +55,7 @@ namespace Sniffer.DotNetversion
                         {
                             // Only critical if all frameworks are critical
                             if (result == CsReportResult.Critical)
-                                asset.SetResult(CsReportResult.Critical, "Target framework is in the critical list");
+                                asset.SetResult(CsReportResult.Critical, string.Format(Strings.ResultCritical, targetFramework));
                         }
                         else if (Matches(targetFramework, warningMatchers))
                         {
@@ -63,7 +63,7 @@ namespace Sniffer.DotNetversion
                             // ReSharper disable once InvertIf
                             if (result >= CsReportResult.Warning)
                             {
-                                asset.SetResult(CsReportResult.Warning, "Target framework is in the warning list");
+                                asset.SetResult(CsReportResult.Warning, string.Format(Strings.ResultWarning, targetFramework));
                                 result = CsReportResult.Warning;
                             }
                         }

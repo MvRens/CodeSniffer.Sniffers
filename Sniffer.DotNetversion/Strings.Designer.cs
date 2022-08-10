@@ -104,5 +104,32 @@ namespace Sniffer.DotNetversion {
                 return ResourceManager.GetString("HelpWarnSummary", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Target framework &quot;{0}&quot; is in the critical list.
+        /// </summary>
+        internal static string ResultCritical {
+            get {
+                return ResourceManager.GetString("ResultCritical", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to determine target framework version.
+        /// </summary>
+        internal static string ResultNoTargetFrameworkVersion {
+            get {
+                return ResourceManager.GetString("ResultNoTargetFrameworkVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Target framework &quot;{0}&quot; is in the warning list.
+        /// </summary>
+        internal static string ResultWarning {
+            get {
+                return ResourceManager.GetString("ResultWarning", resourceCulture);
+            }
+        }
     }
 }
