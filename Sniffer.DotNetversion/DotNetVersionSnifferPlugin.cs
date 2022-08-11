@@ -32,6 +32,7 @@ namespace Sniffer.DotNetversion
             return CsPluginHelpBuilder.Create()
                 .SetSummary(getString(nameof(Strings.HelpSummary)))
                 .AddConfiguration(nameof(DotNetVersionOptions.SolutionsOnly), getString(nameof(Strings.HelpSolutionsOnlySummary)))
+                .AddConfiguration(nameof(DotNetVersionOptions.ExcludeFolders), getString(nameof(Strings.HelpExcludeFoldersSummary)), getString(nameof(Strings.HelpExcludeFoldersDescription)))
                 .AddConfiguration(nameof(DotNetVersionOptions.Warn), getString(nameof(Strings.HelpWarnSummary)), getString(nameof(Strings.HelpWarnDescription)))
                 .AddConfiguration(nameof(DotNetVersionOptions.Critical), getString(nameof(Strings.HelpCriticalSummary)))
                 .BuildHtml();

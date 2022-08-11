@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CodeSniffer.Core" Version="0.1.0-develop0011">
+    <PackageReference Include="CodeSniffer.Core" Version="0.1.0-develop0021">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Build" Version="17.2.0" />

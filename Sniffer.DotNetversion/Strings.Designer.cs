@@ -70,6 +70,26 @@ namespace Sniffer.DotNetversion {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to If a filter starts and ends with a forward slash (/), it is considered a regular expression. If it contains either an asterisk (*) or question mark (?), these are considered wildcards for respectively matching 0 or more characters (*) or exactly one character (?). Otherwise, the version must match exactly (case-insensitive).
+        ///
+        ///The path separator is a backwards slash regardless of the operating system CodeSniffer runs on, to prevent conflicts..
+        /// </summary>
+        internal static string HelpExcludeFoldersDescription {
+            get {
+                return ResourceManager.GetString("HelpExcludeFoldersDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The folders to exclude, relative to the root of the repository..
+        /// </summary>
+        internal static string HelpExcludeFoldersSummary {
+            get {
+                return ResourceManager.GetString("HelpExcludeFoldersSummary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to If True, only projects in Solution files will be considered. Otherwise all project files will be checked. Defaults to False..
         /// </summary>
         internal static string HelpSolutionsOnlySummary {

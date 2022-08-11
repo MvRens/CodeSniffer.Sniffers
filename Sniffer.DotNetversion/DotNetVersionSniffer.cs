@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
-using System.Xml.XPath;
+using System.Xml.Linq;
 using CodeSniffer.Core.Sniffer;
 using Microsoft.Build.Construction;
 using Serilog;
@@ -14,6 +14,7 @@ namespace Sniffer.DotNetversion
         private readonly ILogger logger;
         private readonly DotNetVersionOptions options;
 
+        private readonly IReadOnlyList<MatcherFunc> excludeFoldersMatchers;
         private readonly IReadOnlyList<MatcherFunc> criticalMatchers;
         private readonly IReadOnlyList<MatcherFunc> warningMatchers;
 
@@ -23,18 +24,29 @@ namespace Sniffer.DotNetversion
             this.logger = logger;
             this.options = options;
 
+            excludeFoldersMatchers = CreateMatchers(options.ExcludeFolders);
             criticalMatchers = CreateMatchers(options.Critical);
             warningMatchers = CreateMatchers(options.Warn);
         }
 
 
-        public ICsReport Execute(string path)
+        public async ValueTask<ICsReport?> Execute(string path, CancellationToken cancellationToken)
         {
             var builder = CsReportBuilder.Create();
 
             foreach (var projectFile in GetProjectFiles(path))
             {
                 var projectName = Path.GetRelativePath(path, projectFile);
+
+                if (Path.DirectorySeparatorChar != '\\')
+                    projectName = projectName.Replace(Path.DirectorySeparatorChar, '\\');
+
+                if (Matches(projectName, excludeFoldersMatchers))
+                {
+                    logger.Debug("Skipping project file {filename} because it matches one of the exclude folders", projectName);
+                    continue;
+                }
+
                 var asset = builder.AddAsset(projectName, projectName);
 
                 logger.Debug("Scanning project file {filename}", projectFile);
@@ -44,7 +56,7 @@ namespace Sniffer.DotNetversion
                     var targetFrameworks = new StringBuilder();
                     asset.SetResult(CsReportResult.Critical, Strings.ResultNoTargetFrameworkVersion);
 
-                    foreach (var targetFramework in GetTargetFrameworks(projectFile))
+                    foreach (var targetFramework in await GetTargetFrameworks(projectFile, cancellationToken))
                     {
                         if (targetFrameworks.Length > 0)
                             targetFrameworks.Append(", ");
@@ -107,7 +119,10 @@ namespace Sniffer.DotNetversion
                 var solution = SolutionFile.Parse(solutionFile);
                 foreach (var project in solution.ProjectsInOrder.Where(p =>
                              p.ProjectType != SolutionProjectType.SolutionFolder))
-                    yield return project.AbsolutePath;
+                {
+                    if (File.Exists(project.AbsolutePath))
+                        yield return project.AbsolutePath;
+                }
             }
         }
 
@@ -120,25 +135,26 @@ namespace Sniffer.DotNetversion
         }
 
 
-        private IEnumerable<string> GetTargetFrameworks(string projectFile)
+        private async ValueTask<IEnumerable<string>> GetTargetFrameworks(string projectFile, CancellationToken cancellationToken)
         {
-            var project = new XPathDocument(projectFile);
-            var navigator = project.CreateNavigator();
-
-            var versionsNode = navigator.SelectSingleNode("/Project/PropertyGroup/TargetFrameworks");
-            if (versionsNode != null)
+            XElement project;
+            await using (var stream = new FileStream(projectFile, FileMode.Open, FileAccess.Read))
             {
-                var versions = versionsNode.Value.Split(';').Where(v => !string.IsNullOrWhiteSpace(v)).ToList();
-                if (versions.Count > 0)
-                    return versions;
+                project = await XElement.LoadAsync(stream, LoadOptions.None, cancellationToken);
             }
-                
 
-            var versionNode =
-                navigator.SelectSingleNode("/Project/PropertyGroup/TargetFramework") ??
-                navigator.SelectSingleNode("/Project/PropertyGroup/TargetFrameworkVersion");
+            var versions = FindFirstNodeValue(project, "Project", "PropertyGroup", "TargetFrameworks");
+            if (versions != null)
+            {
+                var versionValues = versions.Split(';').Where(v => !string.IsNullOrWhiteSpace(v)).ToList();
+                if (versionValues.Count > 0)
+                    return versionValues;
+            }
 
-            var version = versionNode?.Value;
+            var version =
+                FindFirstNodeValue(project, "Project", "PropertyGroup", "TargetFramework") ??
+                FindFirstNodeValue(project, "Project", "PropertyGroup", "TargetFrameworkVersion");
+
             if (!string.IsNullOrWhiteSpace(version))
                 return Enumerable.Repeat(version, 1);
             
@@ -147,6 +163,25 @@ namespace Sniffer.DotNetversion
                 projectFile);
 
             return Enumerable.Empty<string>();
+        }
+
+
+        private static string? FindFirstNodeValue(XElement document, string documentElement, params string[] path)
+        {
+            if (path.Length == 0)
+                return null;
+
+            if (document.Name.LocalName != documentElement)
+                return null;
+
+            // XPath insists on using namespaces, this is easier and good enough
+            return path
+                .Aggregate(
+                    new [] { document } as IEnumerable<XElement>, 
+                    (current, part) => current.SelectMany(n => n.Elements().Where(e => e.Name.LocalName == part)))
+                .Where(e => !string.IsNullOrWhiteSpace(e.Value))
+                .Select(e => e.Value)
+                .FirstOrDefault();
         }
 
 
