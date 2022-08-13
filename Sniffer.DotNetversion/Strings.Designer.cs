@@ -74,18 +74,18 @@ namespace Sniffer.DotNetversion {
         ///
         ///The path separator is a backwards slash regardless of the operating system CodeSniffer runs on, to prevent conflicts..
         /// </summary>
-        internal static string HelpExcludeFoldersDescription {
+        internal static string HelpExcludePathsDescription {
             get {
-                return ResourceManager.GetString("HelpExcludeFoldersDescription", resourceCulture);
+                return ResourceManager.GetString("HelpExcludePathsDescription", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The folders to exclude, relative to the root of the repository..
+        ///   Looks up a localized string similar to The paths to exclude, relative to the root of the repository. Tested against the filenames of solutions and/or project..
         /// </summary>
-        internal static string HelpExcludeFoldersSummary {
+        internal static string HelpExcludePathsSummary {
             get {
-                return ResourceManager.GetString("HelpExcludeFoldersSummary", resourceCulture);
+                return ResourceManager.GetString("HelpExcludePathsSummary", resourceCulture);
             }
         }
         
@@ -140,6 +140,15 @@ namespace Sniffer.DotNetversion {
         internal static string ResultNoTargetFrameworkVersion {
             get {
                 return ResourceManager.GetString("ResultNoTargetFrameworkVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Path matches one of the ExcludePaths entries.
+        /// </summary>
+        internal static string ResultSkippedExcludePaths {
+            get {
+                return ResourceManager.GetString("ResultSkippedExcludePaths", resourceCulture);
             }
         }
         

@@ -14,7 +14,7 @@ namespace Sniffer.DotNetversion
         private readonly ILogger logger;
         private readonly DotNetVersionOptions options;
 
-        private readonly IReadOnlyList<MatcherFunc> excludeFoldersMatchers;
+        private readonly IReadOnlyList<MatcherFunc> excludePathsMatchers;
         private readonly IReadOnlyList<MatcherFunc> criticalMatchers;
         private readonly IReadOnlyList<MatcherFunc> warningMatchers;
 
@@ -24,7 +24,7 @@ namespace Sniffer.DotNetversion
             this.logger = logger;
             this.options = options;
 
-            excludeFoldersMatchers = CreateMatchers(options.ExcludeFolders);
+            excludePathsMatchers = CreateMatchers(options.ExcludePaths);
             criticalMatchers = CreateMatchers(options.Critical);
             warningMatchers = CreateMatchers(options.Warn);
         }
@@ -34,20 +34,20 @@ namespace Sniffer.DotNetversion
         {
             var builder = CsReportBuilder.Create();
 
-            foreach (var projectFile in GetProjectFiles(path))
+            foreach (var projectFile in GetProjectFiles(path, builder))
             {
                 var projectName = Path.GetRelativePath(path, projectFile);
 
                 if (Path.DirectorySeparatorChar != '\\')
                     projectName = projectName.Replace(Path.DirectorySeparatorChar, '\\');
 
-                if (Matches(projectName, excludeFoldersMatchers))
+                var asset = builder.AddAsset(projectName, projectName);
+
+                if (Matches(projectName, excludePathsMatchers))
                 {
-                    logger.Debug("Skipping project file {filename} because it matches one of the exclude folders", projectName);
+                    asset.SetResult(CsReportResult.Skipped, Strings.ResultSkippedExcludePaths);
                     continue;
                 }
-
-                var asset = builder.AddAsset(projectName, projectName);
 
                 logger.Debug("Scanning project file {filename}", projectFile);
                 try
@@ -67,7 +67,8 @@ namespace Sniffer.DotNetversion
                         {
                             // Only critical if all frameworks are critical
                             if (result == CsReportResult.Critical)
-                                asset.SetResult(CsReportResult.Critical, string.Format(Strings.ResultCritical, targetFramework));
+                                asset.SetResult(CsReportResult.Critical,
+                                    string.Format(Strings.ResultCritical, targetFramework));
                         }
                         else if (Matches(targetFramework, warningMatchers))
                         {
@@ -75,7 +76,8 @@ namespace Sniffer.DotNetversion
                             // ReSharper disable once InvertIf
                             if (result >= CsReportResult.Warning)
                             {
-                                asset.SetResult(CsReportResult.Warning, string.Format(Strings.ResultWarning, targetFramework));
+                                asset.SetResult(CsReportResult.Warning,
+                                    string.Format(Strings.ResultWarning, targetFramework));
                                 result = CsReportResult.Warning;
                             }
                         }
@@ -99,21 +101,30 @@ namespace Sniffer.DotNetversion
         }
 
 
-        private IEnumerable<string> GetProjectFiles(string path)
+        private IEnumerable<string> GetProjectFiles(string path, CsReportBuilder builder)
         {
             return options.SolutionsOnly
-                ? GetSolutionProjectFiles(path)
+                ? GetSolutionProjectFiles(path, builder)
                 : GetAllProjectFiles(path);
         }
 
 
 
-        private IEnumerable<string> GetSolutionProjectFiles(string path)
+        private IEnumerable<string> GetSolutionProjectFiles(string path, CsReportBuilder builder)
         {
             logger.Debug("Scanning path {path} for Visual Studio solutions", path);
 
             foreach (var solutionFile in Directory.GetFiles(path, @"*.sln", SearchOption.AllDirectories))
             {
+                var solutionName = Path.GetRelativePath(path, solutionFile);
+                if (Matches(solutionName, excludePathsMatchers))
+                {
+                    builder
+                        .AddAsset(solutionName, solutionName)
+                        .SetResult(CsReportResult.Skipped, Strings.ResultSkippedExcludePaths);
+                    continue;
+                }
+
                 logger.Debug("Parsing solution file {filename}", solutionFile);
 
                 var solution = SolutionFile.Parse(solutionFile);
