@@ -8,11 +8,10 @@ using Serilog;
 
 namespace Sniffer.DotNetversion
 {
-    [CsPlugin("fe7d8b97-efd3-44c2-81b6-5f86c0c5f684")]
+    [CsPlugin("fe7d8b97-efd3-44c2-81b6-5f86c0c5f684", ".NET target framework version")]
     [UsedImplicitly]
     public class DotNetVersionSnifferPlugin : ICsSnifferPlugin, ICsPluginHelp
     {
-        public string Name => ".NET target framework version";
         public JsonObject? DefaultOptions => JsonSerializer.SerializeToNode(DotNetVersionOptions.Default()) as JsonObject;
 
 
@@ -25,7 +24,7 @@ namespace Sniffer.DotNetversion
         }
 
 
-        public string? GetOptionsHelpHtml(IReadOnlyList<CultureInfo> cultures)
+        public string GetOptionsHelpHtml(IReadOnlyList<CultureInfo> cultures)
         {
             var getString = Strings.ResourceManager.CreateGetString(cultures);
 

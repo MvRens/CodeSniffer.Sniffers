@@ -30,7 +30,7 @@ namespace Sniffer.DotNetversion
         }
 
 
-        public async ValueTask<ICsReport?> Execute(string path, CancellationToken cancellationToken)
+        public async ValueTask<ICsReport?> Execute(string path, ICsScanContext context, CancellationToken cancellationToken)
         {
             var builder = CsReportBuilder.Create();
 

@@ -10,13 +10,14 @@ namespace SniffersTest
         {
             ICsReport? report;
 
-            using (var logger = new LoggerConfiguration()
-                       .WriteTo.Console()
-                       .CreateLogger())
+            await using (var logger = new LoggerConfiguration()
+                             .WriteTo.Console()
+                             .CreateLogger())
             {
                 var sniffer = new DotNetVersionSniffer(logger, DotNetVersionOptions.Default());
                 report = await sniffer.Execute(
                     "C:\\path\\to\\test",
+                    new TestScanContext(),
                     CancellationToken.None);
             }
 
@@ -32,5 +33,10 @@ namespace SniffersTest
                 Console.WriteLine();
             }
         }
+    }
+
+    internal class TestScanContext : ICsScanContext
+    {
+        public string BranchName => "master";
     }
 }
