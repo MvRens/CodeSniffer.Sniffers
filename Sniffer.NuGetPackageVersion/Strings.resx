@@ -117,27 +117,36 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="HelpMergeBranches" xml:space="preserve">
-    <value>Determines which branches are considered final merge targets, typically "master", "main" and/or "develop". Branches which are merged into one of these branches are considered finished and should be removed unless further commits are being pushed.
-
-Note that only commits in one of these branches will trigger a check for stale branches.</value>
+  <data name="HelpCriticalExactSummary" xml:space="preserve">
+    <value>The exact version of the package that is considered critical.</value>
   </data>
-  <data name="HelpStaleAfterDays" xml:space="preserve">
-    <value>Branches which haven't had any commits in this many days are considered stale and should be updated or closed. The branches in the "MergeBranches" set are ignored for this check. Leave empty or set to 0 to disable this check.</value>
+  <data name="HelpCriticalOlderSummary" xml:space="preserve">
+    <value>Versions older than this version of the package will be considered critical.</value>
+  </data>
+  <data name="HelpExcludePathsDescription" xml:space="preserve">
+    <value>If a filter starts and ends with a forward slash (/), it is considered a regular expression. If it contains either an asterisk (*) or question mark (?), these are considered wildcards for respectively matching 0 or more characters (*) or exactly one character (?). Otherwise, the version must match exactly (case-insensitive).
+
+The path separator is a backwards slash regardless of the operating system CodeSniffer runs on, to prevent conflicts.</value>
+  </data>
+  <data name="HelpExcludePathsSummary" xml:space="preserve">
+    <value>The paths to exclude, relative to the root of the repository. Tested against the filenames of solutions and/or project.</value>
+  </data>
+  <data name="HelpNameSummary" xml:space="preserve">
+    <value>The name of the NuGet package to check.</value>
+  </data>
+  <data name="HelpPackagesSummary" xml:space="preserve">
+    <value>An array of packages to check.</value>
+  </data>
+  <data name="HelpSolutionsOnlySummary" xml:space="preserve">
+    <value>If True, only projects in Solution files will be considered. Otherwise all project files will be checked. Defaults to False.</value>
   </data>
   <data name="HelpSummary" xml:space="preserve">
-    <value>Checks for remote branches which should have been deleted, for example, because the Git Flow has been finished.</value>
+    <value>Checks the versions of NuGet packages used by C# projects in the repository.</value>
   </data>
-  <data name="ResultMerged" xml:space="preserve">
-    <value>Branch has been merged into {0}</value>
+  <data name="HelpWarnExactSummary" xml:space="preserve">
+    <value>The exact version of the package that will cause a warning.</value>
   </data>
-  <data name="ResultMergedOutput" xml:space="preserve">
-    <value>On {0} by {1} &lt;{2}&gt; in commit {3}.</value>
-  </data>
-  <data name="ResultStale" xml:space="preserve">
-    <value>Branch had last commit {0} days ago</value>
-  </data>
-  <data name="ResultStaleOutput" xml:space="preserve">
-    <value>On {0} by {1} &lt;{2}&gt; in commit {3}.</value>
+  <data name="HelpWarnOlderSummary" xml:space="preserve">
+    <value>Versions older than this version of the package will cause a warning.</value>
   </data>
 </root>

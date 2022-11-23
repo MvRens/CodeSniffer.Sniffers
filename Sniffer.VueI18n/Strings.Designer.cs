@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Sniffer.GitStaleBranches {
+namespace Sniffer.VueI18n {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Sniffer.GitStaleBranches {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Sniffer.GitStaleBranches.Strings", typeof(Strings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Sniffer.VueI18n.Strings", typeof(Strings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,27 +61,7 @@ namespace Sniffer.GitStaleBranches {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Determines which branches are considered final merge targets, typically &quot;master&quot;, &quot;main&quot; and/or &quot;develop&quot;. Branches which are merged into one of these branches are considered finished and should be removed unless further commits are being pushed.
-        ///
-        ///Note that only commits in one of these branches will trigger a check for stale branches..
-        /// </summary>
-        internal static string HelpMergeBranches {
-            get {
-                return ResourceManager.GetString("HelpMergeBranches", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Branches which haven&apos;t had any commits in this many days are considered stale and should be updated or closed. The branches in the &quot;MergeBranches&quot; set are ignored for this check. Leave empty or set to 0 to disable this check..
-        /// </summary>
-        internal static string HelpStaleAfterDays {
-            get {
-                return ResourceManager.GetString("HelpStaleAfterDays", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Checks for remote branches which should have been deleted, for example, because the Git Flow has been finished..
+        ///   Looks up a localized string similar to TODO.
         /// </summary>
         internal static string HelpSummary {
             get {
@@ -90,38 +70,29 @@ namespace Sniffer.GitStaleBranches {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Branch has been merged into {0}.
+        ///   Looks up a localized string similar to Some locales are missing keys..
         /// </summary>
-        internal static string ResultMerged {
+        internal static string ResultMissingKeys {
             get {
-                return ResourceManager.GetString("ResultMerged", resourceCulture);
+                return ResourceManager.GetString("ResultMissingKeys", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to On {0} by {1} &lt;{2}&gt; in commit {3}..
+        ///   Looks up a localized string similar to Locale &apos;{0}&apos; is missing: {1}.
         /// </summary>
-        internal static string ResultMergedOutput {
+        internal static string ResultMissingKeysOutput {
             get {
-                return ResourceManager.GetString("ResultMergedOutput", resourceCulture);
+                return ResourceManager.GetString("ResultMissingKeysOutput", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Branch had last commit {0} days ago.
+        ///   Looks up a localized string similar to The Vue component is incompatible: {0}.
         /// </summary>
-        internal static string ResultStale {
+        internal static string ResultSkippedIncompatible {
             get {
-                return ResourceManager.GetString("ResultStale", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to On {0} by {1} &lt;{2}&gt; in commit {3}..
-        /// </summary>
-        internal static string ResultStaleOutput {
-            get {
-                return ResourceManager.GetString("ResultStaleOutput", resourceCulture);
+                return ResourceManager.GetString("ResultSkippedIncompatible", resourceCulture);
             }
         }
     }

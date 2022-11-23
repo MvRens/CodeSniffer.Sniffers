@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,27 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="HelpMergeBranches" xml:space="preserve">
-    <value>Determines which branches are considered final merge targets, typically "master", "main" and/or "develop". Branches which are merged into one of these branches are considered finished and should be removed unless further commits are being pushed.
-
-Note that only commits in one of these branches will trigger a check for stale branches.</value>
-  </data>
-  <data name="HelpStaleAfterDays" xml:space="preserve">
-    <value>Branches which haven't had any commits in this many days are considered stale and should be updated or closed. The branches in the "MergeBranches" set are ignored for this check. Leave empty or set to 0 to disable this check.</value>
-  </data>
   <data name="HelpSummary" xml:space="preserve">
-    <value>Checks for remote branches which should have been deleted, for example, because the Git Flow has been finished.</value>
+    <value>TODO</value>
   </data>
-  <data name="ResultMerged" xml:space="preserve">
-    <value>Branch has been merged into {0}</value>
+  <data name="ResultMissingKeys" xml:space="preserve">
+    <value>Some locales are missing keys.</value>
   </data>
-  <data name="ResultMergedOutput" xml:space="preserve">
-    <value>On {0} by {1} &lt;{2}&gt; in commit {3}.</value>
+  <data name="ResultMissingKeysOutput" xml:space="preserve">
+    <value>Locale '{0}' is missing: {1}</value>
   </data>
-  <data name="ResultStale" xml:space="preserve">
-    <value>Branch had last commit {0} days ago</value>
-  </data>
-  <data name="ResultStaleOutput" xml:space="preserve">
-    <value>On {0} by {1} &lt;{2}&gt; in commit {3}.</value>
+  <data name="ResultSkippedIncompatible" xml:space="preserve">
+    <value>The Vue component is incompatible: {0}</value>
   </data>
 </root>

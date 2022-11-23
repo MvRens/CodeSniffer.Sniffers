@@ -31,6 +31,7 @@ namespace Sniffer.GitStaleBranches
             return CsPluginHelpBuilder.Create()
                 .SetSummary(getString(nameof(Strings.HelpSummary)))
                 .AddConfiguration(nameof(GitStaleBranchesOptions.MergeBranches), getString(nameof(Strings.HelpMergeBranches)))
+                .AddConfiguration(nameof(GitStaleBranchesOptions.StaleAfterDays), getString(nameof(Strings.HelpStaleAfterDays)))
                 .BuildHtml();
         }
     }

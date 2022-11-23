@@ -4,7 +4,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <BaseOutputPath>$(APPDATA)\CodeSniffer\Plugins\DotNetVersion\</BaseOutputPath>
+    <BaseOutputPath>$(APPDATA)\CodeSniffer\Plugins\Grep\</BaseOutputPath>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
@@ -13,12 +13,6 @@
     <PackageReference Include="CodeSniffer.Core" Version="0.1.0-develop0044">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Build" Version="17.4.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Sniffer.Lib.Matchers.cs\Sniffer.Lib.Matchers.cs.csproj" />
-    <ProjectReference Include="..\Sniffer.Lib.VsProjects\Sniffer.Lib.VsProjects.csproj" />
   </ItemGroup>
 
   <ItemGroup>

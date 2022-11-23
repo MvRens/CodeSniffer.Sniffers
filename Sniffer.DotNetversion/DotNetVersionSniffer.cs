@@ -1,22 +1,20 @@
 ﻿using System.Text;
-using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using CodeSniffer.Core.Sniffer;
-using Microsoft.Build.Construction;
 using Serilog;
+using Sniffer.Lib.Matchers.cs;
+using Sniffer.Lib.VsProjects;
 
 namespace Sniffer.DotNetversion
 {
     public class DotNetVersionSniffer : ICsSniffer
     {
-        private delegate bool MatcherFunc(string value);
-
         private readonly ILogger logger;
         private readonly DotNetVersionOptions options;
 
-        private readonly IReadOnlyList<MatcherFunc> excludePathsMatchers;
-        private readonly IReadOnlyList<MatcherFunc> criticalMatchers;
-        private readonly IReadOnlyList<MatcherFunc> warningMatchers;
+        private readonly IMatcher excludePathsMatcher;
+        private readonly IMatcher criticalMatcher;
+        private readonly IMatcher warningMatcher;
 
 
         public DotNetVersionSniffer(ILogger logger, DotNetVersionOptions options)
@@ -24,59 +22,47 @@ namespace Sniffer.DotNetversion
             this.logger = logger;
             this.options = options;
 
-            excludePathsMatchers = CreateMatchers(options.ExcludePaths);
-            criticalMatchers = CreateMatchers(options.Critical);
-            warningMatchers = CreateMatchers(options.Warn);
+            excludePathsMatcher = MatcherFactory.Create(options.ExcludePaths ?? Enumerable.Empty<string>());
+            criticalMatcher = MatcherFactory.Create(options.Critical ?? Enumerable.Empty<string>());
+            warningMatcher = MatcherFactory.Create(options.Warn ?? Enumerable.Empty<string>());
         }
 
 
         public async ValueTask<ICsReport?> Execute(string path, ICsScanContext context, CancellationToken cancellationToken)
         {
             var builder = CsReportBuilder.Create();
+            var projectsEnumerator = new VsProjectsEnumerator(logger, builder, excludePathsMatcher);
 
-            foreach (var projectFile in GetProjectFiles(path, builder))
+            foreach (var project in projectsEnumerator.GetProjects(path, options.SolutionsOnly))
             {
-                var projectName = Path.GetRelativePath(path, projectFile);
-
-                if (Path.DirectorySeparatorChar != '\\')
-                    projectName = projectName.Replace(Path.DirectorySeparatorChar, '\\');
-
-                var asset = builder.AddAsset(projectName, projectName);
-
-                if (Matches(projectName, excludePathsMatchers))
-                {
-                    asset.SetResult(CsReportResult.Skipped, Strings.ResultSkippedExcludePaths);
-                    continue;
-                }
-
-                logger.Debug("Scanning project file {filename}", projectFile);
+                logger.Debug("Scanning project file {filename}", project.Filename);
                 try
                 {
                     var result = CsReportResult.Critical;
                     var targetFrameworks = new StringBuilder();
-                    asset.SetResult(CsReportResult.Critical, Strings.ResultNoTargetFrameworkVersion);
+                    project.Asset.SetResult(CsReportResult.Critical, Strings.ResultNoTargetFrameworkVersion);
 
-                    foreach (var targetFramework in await GetTargetFrameworks(projectFile, cancellationToken))
+                    foreach (var targetFramework in await GetTargetFrameworks(project.Filename, cancellationToken))
                     {
                         if (targetFrameworks.Length > 0)
                             targetFrameworks.Append(", ");
 
                         targetFrameworks.Append(targetFramework);
 
-                        if (Matches(targetFramework, criticalMatchers))
+                        if (criticalMatcher.Matches(targetFramework))
                         {
                             // Only critical if all frameworks are critical
                             if (result == CsReportResult.Critical)
-                                asset.SetResult(CsReportResult.Critical,
+                                project.Asset.SetResult(CsReportResult.Critical,
                                     string.Format(Strings.ResultCritical, targetFramework));
                         }
-                        else if (Matches(targetFramework, warningMatchers))
+                        else if (warningMatcher.Matches(targetFramework))
                         {
                             // Only warning if all frameworks are either warning or critical
                             // ReSharper disable once InvertIf
                             if (result >= CsReportResult.Warning)
                             {
-                                asset.SetResult(CsReportResult.Warning,
+                                project.Asset.SetResult(CsReportResult.Warning,
                                     string.Format(Strings.ResultWarning, targetFramework));
                                 result = CsReportResult.Warning;
                             }
@@ -84,65 +70,20 @@ namespace Sniffer.DotNetversion
                         else
                         {
                             // If any framework is valid, consider the check a success
-                            asset.SetResult(CsReportResult.Success, "");
+                            project.Asset.SetResult(CsReportResult.Success, "");
                             result = CsReportResult.Success;
                         }
                     }
 
-                    asset.SetProperty("Target framework", targetFrameworks.ToString());
+                    project.Asset.SetProperty("Target framework", targetFrameworks.ToString());
                 }
                 catch (Exception e)
                 {
-                    logger.Error(e, "Error while parsing project file {filename}: {message}", projectFile, e.Message);
+                    logger.Error(e, "Error while parsing project file {filename}: {message}", project.Filename, e.Message);
                 }
             }
 
             return builder.Build();
-        }
-
-
-        private IEnumerable<string> GetProjectFiles(string path, CsReportBuilder builder)
-        {
-            return options.SolutionsOnly
-                ? GetSolutionProjectFiles(path, builder)
-                : GetAllProjectFiles(path);
-        }
-
-
-
-        private IEnumerable<string> GetSolutionProjectFiles(string path, CsReportBuilder builder)
-        {
-            logger.Debug("Scanning path {path} for Visual Studio solutions", path);
-
-            foreach (var solutionFile in Directory.GetFiles(path, @"*.sln", SearchOption.AllDirectories))
-            {
-                var solutionName = Path.GetRelativePath(path, solutionFile);
-                if (Matches(solutionName, excludePathsMatchers))
-                {
-                    builder
-                        .AddAsset(solutionName, solutionName)
-                        .SetResult(CsReportResult.Skipped, Strings.ResultSkippedExcludePaths);
-                    continue;
-                }
-
-                logger.Debug("Parsing solution file {filename}", solutionFile);
-
-                var solution = SolutionFile.Parse(solutionFile);
-                foreach (var project in solution.ProjectsInOrder.Where(p =>
-                             p.ProjectType != SolutionProjectType.SolutionFolder))
-                {
-                    if (File.Exists(project.AbsolutePath))
-                        yield return project.AbsolutePath;
-                }
-            }
-        }
-
-
-        private IEnumerable<string> GetAllProjectFiles(string path)
-        {
-            // I only use C#, so if you need support for other languages... it's open-source!
-            logger.Debug("Scanning path {path} for C# projects", path);
-            return Directory.GetFiles(path, @"*.csproj", SearchOption.AllDirectories);
         }
 
 
@@ -193,56 +134,6 @@ namespace Sniffer.DotNetversion
                 .Where(e => !string.IsNullOrWhiteSpace(e.Value))
                 .Select(e => e.Value)
                 .FirstOrDefault();
-        }
-
-
-        private static bool Matches(string value, IEnumerable<MatcherFunc> matchers)
-        {
-            return matchers.Any(m => m(value));
-        }
-
-
-        private static IReadOnlyList<MatcherFunc> CreateMatchers(IReadOnlyCollection<string>? versions)
-        {
-            if (versions == null || versions.Count == 0)
-                return Array.Empty<MatcherFunc>();
-
-            return versions
-                .Select(v =>
-                    v.StartsWith("/") && v.EndsWith("/")
-                        ? CreateRegexMatcher(v[1..^1])
-                        : v.Contains('*') || v.Contains('?')
-                            ? CreateWildcardMatcher(v)
-                            : CreateStaticMatcher(v))
-                .Where(m => m != null)
-                .Select(m => m!)
-                .ToList();
-        }
-
-
-        private static MatcherFunc? CreateRegexMatcher(string pattern)
-        {
-            if (string.IsNullOrWhiteSpace(pattern))
-                return null;
-
-            var regex = new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-            return v => regex.IsMatch(v);
-        }
-
-
-        private static MatcherFunc? CreateWildcardMatcher(string pattern)
-        {
-            var regexPattern = "^" + Regex.Escape(pattern).Replace("\\?", ".").Replace("\\*", ".*") + "$";
-            return CreateRegexMatcher(regexPattern);
-        }
-
-
-        private static MatcherFunc? CreateStaticMatcher(string pattern)
-        {
-            if (string.IsNullOrWhiteSpace(pattern))
-                return null;
-
-            return v => v.Equals(pattern, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using CodeSniffer.Core.Sniffer;
 using Serilog;
 using Sniffer.DotNetversion;
+using Sniffer.GitStaleBranches;
+using Sniffer.VueI18n;
 
 namespace SniffersTest
 {
@@ -14,9 +16,12 @@ namespace SniffersTest
                              .WriteTo.Console()
                              .CreateLogger())
             {
-                var sniffer = new DotNetVersionSniffer(logger, DotNetVersionOptions.Default());
+                //var sniffer = new DotNetVersionSniffer(logger, DotNetVersionOptions.Default());
+                //var sniffer = new GitStaleBranchesSniffer(logger, GitStaleBranchesOptions.Default());
+                var sniffer = new VueI18NSniffer(logger, VueI18NOptions.Default());
+
                 report = await sniffer.Execute(
-                    "C:\\path\\to\\test",
+                    "D:\\temp",
                     new TestScanContext(),
                     CancellationToken.None);
             }
@@ -30,6 +35,10 @@ namespace SniffersTest
             {
                 Console.WriteLine(asset.Name);
                 Console.WriteLine(@"  " + asset.Summary);
+
+                if (!string.IsNullOrEmpty(asset.Output))
+                    Console.WriteLine(@"  " + asset.Output);
+
                 Console.WriteLine();
             }
         }

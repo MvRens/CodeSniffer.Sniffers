@@ -6,13 +6,15 @@ namespace Sniffer.GitStaleBranches
     public class GitStaleBranchesOptions
     {
         public string[]? MergeBranches { get; set; }
+        public int? StaleAfterDays { get; set; }
 
 
         public static GitStaleBranchesOptions Default()
         {
             return new GitStaleBranchesOptions
             {
-                MergeBranches = new [] { "master", "main", "develop" }
+                MergeBranches = new [] { "master", "main", "develop" },
+                StaleAfterDays = 90
             };
         }
     }

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Sniffer.DotNetversion {
+namespace Sniffer.NuGetPackageVersion {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Sniffer.DotNetversion {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Sniffer.DotNetversion.Strings", typeof(Strings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Sniffer.NuGetPackageVersion.Strings", typeof(Strings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,11 +61,20 @@ namespace Sniffer.DotNetversion {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The names of the .NET versions, as specified in the project files, which should be considered critical..
+        ///   Looks up a localized string similar to The exact version of the package that is considered critical..
         /// </summary>
-        internal static string HelpCriticalSummary {
+        internal static string HelpCriticalExactSummary {
             get {
-                return ResourceManager.GetString("HelpCriticalSummary", resourceCulture);
+                return ResourceManager.GetString("HelpCriticalExactSummary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Versions older than this version of the package will be considered critical..
+        /// </summary>
+        internal static string HelpCriticalOlderSummary {
+            get {
+                return ResourceManager.GetString("HelpCriticalOlderSummary", resourceCulture);
             }
         }
         
@@ -90,6 +99,24 @@ namespace Sniffer.DotNetversion {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The name of the NuGet package to check..
+        /// </summary>
+        internal static string HelpNameSummary {
+            get {
+                return ResourceManager.GetString("HelpNameSummary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An array of packages to check..
+        /// </summary>
+        internal static string HelpPackagesSummary {
+            get {
+                return ResourceManager.GetString("HelpPackagesSummary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to If True, only projects in Solution files will be considered. Otherwise all project files will be checked. Defaults to False..
         /// </summary>
         internal static string HelpSolutionsOnlySummary {
@@ -99,7 +126,7 @@ namespace Sniffer.DotNetversion {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Checks the .NET version used by C# projects in the repository..
+        ///   Looks up a localized string similar to Checks the versions of NuGet packages used by C# projects in the repository..
         /// </summary>
         internal static string HelpSummary {
             get {
@@ -108,47 +135,20 @@ namespace Sniffer.DotNetversion {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If a filter starts and ends with a forward slash (/), it is considered a regular expression. If it contains either an asterisk (*) or question mark (?), these are considered wildcards for respectively matching 0 or more characters (*) or exactly one character (?). Otherwise, the version must match exactly (case-insensitive)..
+        ///   Looks up a localized string similar to The exact version of the package that will cause a warning..
         /// </summary>
-        internal static string HelpWarnDescription {
+        internal static string HelpWarnExactSummary {
             get {
-                return ResourceManager.GetString("HelpWarnDescription", resourceCulture);
+                return ResourceManager.GetString("HelpWarnExactSummary", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The names of the .NET versions, as specified in the project files, which should cause a warning..
+        ///   Looks up a localized string similar to Versions older than this version of the package will cause a warning..
         /// </summary>
-        internal static string HelpWarnSummary {
+        internal static string HelpWarnOlderSummary {
             get {
-                return ResourceManager.GetString("HelpWarnSummary", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Target framework &quot;{0}&quot; is in the critical list.
-        /// </summary>
-        internal static string ResultCritical {
-            get {
-                return ResourceManager.GetString("ResultCritical", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to determine target framework version.
-        /// </summary>
-        internal static string ResultNoTargetFrameworkVersion {
-            get {
-                return ResourceManager.GetString("ResultNoTargetFrameworkVersion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Target framework &quot;{0}&quot; is in the warning list.
-        /// </summary>
-        internal static string ResultWarning {
-            get {
-                return ResourceManager.GetString("ResultWarning", resourceCulture);
+                return ResourceManager.GetString("HelpWarnOlderSummary", resourceCulture);
             }
         }
     }

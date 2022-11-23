@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <BaseOutputPath>$(APPDATA)\CodeSniffer\Plugins\GitStaleBranches\</BaseOutputPath>
@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CodeSniffer.Core" Version="0.1.0-develop0041">
+    <PackageReference Include="CodeSniffer.Core" Version="0.1.0-develop0044">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="LibGit2Sharp" Version="0.27.0-preview-0182" />

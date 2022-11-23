@@ -2,19 +2,21 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CodeSniffer.Core" Version="0.1.0-develop0041" />
+    <PackageReference Include="CodeSniffer.Core" Version="0.1.0-develop0044" />
     <PackageReference Include="Serilog" Version="2.12.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Sniffer.DotNetversion\Sniffer.DotNetversion.csproj" />
+    <ProjectReference Include="..\Sniffer.GitStaleBranches\Sniffer.GitStaleBranches.csproj" />
+    <ProjectReference Include="..\Sniffer.VueI18n\Sniffer.VueI18n.csproj" />
   </ItemGroup>
 
 </Project>

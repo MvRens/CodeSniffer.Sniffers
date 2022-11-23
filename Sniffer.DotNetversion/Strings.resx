@@ -146,9 +146,6 @@ The path separator is a backwards slash regardless of the operating system CodeS
   <data name="ResultNoTargetFrameworkVersion" xml:space="preserve">
     <value>Unable to determine target framework version</value>
   </data>
-  <data name="ResultSkippedExcludePaths" xml:space="preserve">
-    <value>Path matches one of the ExcludePaths entries</value>
-  </data>
   <data name="ResultWarning" xml:space="preserve">
     <value>Target framework "{0}" is in the warning list</value>
   </data>
